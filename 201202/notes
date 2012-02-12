@@ -54,10 +54,38 @@ use an iterator of array.array instances which is both fairly economical
 in memory and easy to convert to a list if the entire image needs to
 be processed in memory.
 
-Pipelinse and iterators, versus in-memory.
+Using an iterator can be important when processing a huge image, as it
+allows a program to be written that doesn't consume a huge amount of
+RAM.  With PyPNG you can process an image a row at a time (or a few rows
+at a time if you're doing a convolution), and avoid loading the entire
+image into memory.  As I understand it, PIL pretty much forces you to
+load the entire image into memory.
+
+Pipelines and iterators, versus in-memory.
 
 I've used Python (and then PyPNG) to write converters for obscure
 formats like the Plan 9 image format, and the NASA Planetary Data
 Systems image format used by the recently arrived Mercury Messenger
 probe.
 
+Cute one-liners:
+
+transpose image / flip along diagonal (greyscale only):
+
+zip(*pixels)
+
+Extract alpha channel:
+
+(row[3::4] for row in pixels)
+
+Flip image left--right (greyscale only):
+
+(row[::-1] for row in pixels)
+
+Add two same-size images (no clamping):
+
+(p1+p2 for p1,p2 in zip(r1,r2) for r1,r2 in zip(pixels1, pixels2))
+
+Join two images vertically:
+
+itertools.chain(pixels1, pixels2)
