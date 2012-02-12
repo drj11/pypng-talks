@@ -1,0 +1,63 @@
+PyPNG
+
+A Pure Python Library for PNG Images
+
+Portable Network Graphics, a pixel based image file format.
+RGBA (and grey, if you need it), with any pixel depth from 1-bit to
+32-bit.  Palettes too, if you need them.  Lossless.
+
+I found it really useful when making end-to-end graphics pipelines
+because it handle 4 channels in one file (which is simpler than having
+a separate mask file), and it could actually be viewed with ordinary
+image preview programs.  Not as flexible as TARGA and TIFF which have
+32-bit, signed, unsigned, float, FAX compression yadda yadda, but which
+have the drawback that it's quite easy to create a legal TIFF file that
+won't display with an ordinary web browser.
+
+16-bit turns out to be useful for some scientific datasets, and some
+users of PyPNG apparently use it for that.
+
+I originally wrote PNG because it was too hard to install PIL on my Mac,
+and I needed a program to create a background image from a tiled array.
+I like programming in Python, so obviously it had to be a Python
+program.
+
+Found png.py floating around on the net, written by Johann C. Rocholl,
+saw that it had been hacked on by my old graphics supervisor Nicko van
+Someren for alpha and 16-bit support, and I took it and added support
+for all bit depths, a more uniform pixel output format, a few more
+unittests, and put it on googlecode.
+
+The reason for it being purely in Python is purely pragmatic, if I was
+going to write a Python extension in C or Cython, I may as well just use
+PIL.  I like it being in pure Python because it's ludicrously easy to
+install, and works on non-traditional Python implementations like Jython
+and PyPy.
+
+The compression scheme used for PNG images is deflate/zlib, which because
+there is a built in library in Python to do this means that PyPNG has
+much less work to do, compared to say JPEG, or TIFF.  A pure Python JPEG
+encoder/decoder would have to do all the compression in Python, which
+would be very slow.  So by comparison, for PNGs the actual decoding and
+encoding runs at reasonable speed.  Encoding is faster than decoding,
+although the encoder is a bit dumb and making it more clever would make
+it a lot slower.
+
+The basic datatype that PyPNG likes to use for the pixels is a sequence
+of rows, with each row being a sequence of R,G,B channel values.  So a
+list of lists.  PyPNG is written so it's fairly neutral about exactly
+what type of sequences it requires.  When creating data for PyPNG to
+encode into an image file, you can use lists of lists, lists
+of tuples, an iterator of array.array instances, and 2-dimensional numpy
+arrays.  When decoding pixels from an image file PyPNG generally will
+use an iterator of array.array instances which is both fairly economical
+in memory and easy to convert to a list if the entire image needs to
+be processed in memory.
+
+Pipelinse and iterators, versus in-memory.
+
+I've used Python (and then PyPNG) to write converters for obscure
+formats like the Plan 9 image format, and the NASA Planetary Data
+Systems image format used by the recently arrived Mercury Messenger
+probe.
+
